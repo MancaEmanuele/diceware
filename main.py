@@ -1,5 +1,7 @@
+import sys
 
-def add(set, num, word):
+
+def add(set: dict, num: str, word: str):
     if len(num) == 1:
         set[num] = word
         return
@@ -8,7 +10,7 @@ def add(set, num, word):
         set[num[0]] = {}
     add(set[num[0]], num[1:], word)
 
-def search(set, num):
+def search(set: dict, num: str):
     if len(num) == 1:
         return set[num]
     if num[0] not in set:
@@ -16,17 +18,24 @@ def search(set, num):
     else:
         return search(set[num[0]], num[1:])
 
+def main():
+    if len(sys.argv) < 3:
+        print("insufficient args number")
+        return
 
-tree = {}
-with open("wordlist.txt", encoding="utf_8") as f:
-    import re
-    r = re.compile("\d{5} \w*")
-    for line in f:
-        if r.match(line) is not None:
-            add(tree, line[:5], line[6:-1])
+    tree = {}
+    with open(sys.argv[1], encoding="utf_8") as f:
+        import re
+        r = re.compile("\d{5} \w*")
+        for line in f:
+            if r.match(line) is not None:
+                add(tree, line[:5], line[6:-1])
 
 
-with open("numberlist.txt") as f:
-    for line in f:
-        print(search(tree, line[:-1]), end= " ")
+    with open(sys.argv[2]) as f:
+        for line in f:
+            print(search(tree, line[:-1]), end= " ")
+
+if __name__ == "__main__":
+    main()
 
