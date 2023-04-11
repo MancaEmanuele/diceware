@@ -12,7 +12,10 @@ def add(set: dict, num: str, word: str):
 
 def search(set: dict, num: str):
     if len(num) == 1:
-        return set[num]
+        if isinstance(set[num], str):
+            return set[num]
+        else:
+            return None
     if num[0] not in set:
         return None
     else:
@@ -34,7 +37,8 @@ def main():
 
     with open(sys.argv[2]) as f:
         for line in f:
-            print(search(tree, line[:-1]), end= " ")
+            line = line.removesuffix('\n')
+            print(search(tree, line), end= " ")
 
 if __name__ == "__main__":
     main()
