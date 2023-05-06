@@ -1,5 +1,7 @@
 import sys
-
+import argparse as arg
+import requests
+import re
 
 def add(set: dict, num: str, word: str):
     if len(num) == 1:
@@ -21,30 +23,64 @@ def search(set: dict, num: str):
     else:
         return search(set[num[0]], num[1:])
 
-def readNumbersFile(filename: str) -> list:
+def readNumbersFile(file) -> list:
     res = list()
-    with open(filename) as f:
+    with file as f:
         for line in f:
             line = line.removesuffix('\n')
             res.append(line)
     return res
 
+def generateNumbers(dim : int) -> list:
+
+    r = requests.get("https://www.random.org/integers", {
+        'num': 5*dim,
+        'min': 1,
+        'max': 6,
+        'col': 5,
+        'base': 10,
+        'format': 'plain',
+        'rnd': 'new'})
+
+    if r.status_code != 200 :
+        print(r.text)
+        return []
+    
+    return r.text.replace('\t', '').split('\n')[:-1]
+
+def printEntropy(dim : int):
+    word_entropy = 12.9248 
+    print("Entropy: ", round(dim*word_entropy, 2))
+
+
 def main():
-    if len(sys.argv) < 3:
-        print("insufficient args number")
-        return
+
+    parser = arg.ArgumentParser()
+    parser.add_argument("wordlist", type=arg.FileType("r", encoding="utf_8"))
+    grp = parser.add_mutually_exclusive_group(required=True)
+    grp.add_argument("-i", action="store_true")
+    grp.add_argument("-g", type=int)
+    grp.add_argument("-f", type=arg.FileType("w", encoding="utf_8"))
+    args = parser.parse_args()
+
 
     tree = {}
-    with open(sys.argv[1], encoding="utf_8") as f:
-        import re
+    with args.wordlist as f:
         r = re.compile("\d{5} \w*")
         for line in f:
             if r.match(line) is not None:
                 add(tree, line[:5], line[6:-1])
 
+    if args.f is not None:
+        for num in readNumbersFile(args.f):
+            print(search(tree, num))
+        return
 
-    for num in readNumbersFile(sys.argv[2]):
-        print(search(tree, num))
+    if args.g is not None :
+        for num in generateNumbers(args.g):
+            print(search(tree, num), end= " ")
+        return
+
 
 if __name__ == "__main__":
     main()
