@@ -21,6 +21,14 @@ def search(set: dict, num: str):
     else:
         return search(set[num[0]], num[1:])
 
+def readNumbersFile(filename: str) -> list:
+    res = list()
+    with open(filename) as f:
+        for line in f:
+            line = line.removesuffix('\n')
+            res.append(line)
+    return res
+
 def main():
     if len(sys.argv) < 3:
         print("insufficient args number")
@@ -35,10 +43,8 @@ def main():
                 add(tree, line[:5], line[6:-1])
 
 
-    with open(sys.argv[2]) as f:
-        for line in f:
-            line = line.removesuffix('\n')
-            print(search(tree, line), end= " ")
+    for num in readNumbersFile(sys.argv[2]):
+        print(search(tree, num))
 
 if __name__ == "__main__":
     main()
