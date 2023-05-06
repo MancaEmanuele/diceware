@@ -4,6 +4,8 @@ import requests
 import re
 import signal
 
+DICE_ROLLS = 5
+
 def add(set: dict, num: str, word: str):
     if len(num) == 1:
         set[num] = word
@@ -14,15 +16,17 @@ def add(set: dict, num: str, word: str):
     add(set[num[0]], num[1:], word)
 
 def search(set: dict, num: str):
+    if len(num) != DICE_ROLLS:
+        return None
+    return search_rec(set, num)
+
+def search_rec(set: dict, num: str):
     if len(num) == 1:
-        if isinstance(set[num], str):
-            return set[num]
-        else:
-            return None
+        return set[num]
     if num[0] not in set:
         return None
     else:
-        return search(set[num[0]], num[1:])
+        return search_rec(set[num[0]], num[1:])
 
 def readNumbersFile(file) -> list:
     res = list()
@@ -68,10 +72,10 @@ def main():
 
     tree = {}
     with args.wordlist as f:
-        r = re.compile("\d{5} \w*")
+        r = re.compile(f"\d{ {DICE_ROLLS} } \w*")
         for line in f:
             if r.match(line) is not None:
-                add(tree, line[:5], line[6:-1])
+                add(tree, line[:DICE_ROLLS], line[DICE_ROLLS+1:-1])
 
     print("Word tree generated.")
 
