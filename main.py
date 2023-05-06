@@ -1,5 +1,5 @@
 import sys
-
+import signal
 
 def add(set: dict, num: str, word: str):
     if len(num) == 1:
@@ -22,7 +22,8 @@ def search(set: dict, num: str):
         return search(set[num[0]], num[1:])
 
 def main():
-    if len(sys.argv) < 3:
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    if len(sys.argv) < 2:
         print("insufficient args number")
         return
 
@@ -34,11 +35,18 @@ def main():
             if r.match(line) is not None:
                 add(tree, line[:5], line[6:-1])
 
+    print("Word tree generated.")
 
-    with open(sys.argv[2]) as f:
-        for line in f:
-            line = line.removesuffix('\n')
-            print(search(tree, line), end= " ")
+    i = 0
+    while True:
+        line = input()
+        line = line.removesuffix('\n')
+        res = search(tree, line)
+        if res is not None:
+            print(f"{i}. {res}", end = "\n")
+            i+=1
+        else:
+            print("Not Found")
 
 if __name__ == "__main__":
     main()
