@@ -53,10 +53,6 @@ def generateNumbers(dim : int) -> list:
     
     return r.text.replace('\t', '').split('\n')[:-1]
 
-def printEntropy(dim : int):
-    word_entropy = 12.9248 
-    print("Entropy: ", round(dim*word_entropy, 2))
-
 
 def main():
 
