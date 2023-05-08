@@ -57,11 +57,11 @@ def generateNumbers(dim : int) -> list:
 def main():
 
     parser = arg.ArgumentParser()
-    parser.add_argument("wordlist", type=arg.FileType("r", encoding="utf_8"))
+    parser.add_argument("wordlist", type=arg.FileType("r", encoding="utf_8"), help="wordlist file")
     grp = parser.add_mutually_exclusive_group(required=True)
-    grp.add_argument("-i", action="store_true")
-    grp.add_argument("-g", type=int)
-    grp.add_argument("-f", type=arg.FileType("w", encoding="utf_8"))
+    grp.add_argument("-i", action="store_true", help="interactive input")
+    grp.add_argument("-g", type=int, help="generate x words")
+    grp.add_argument("-f", type=arg.FileType("w", encoding="utf_8"), help="use file as input")
     args = parser.parse_args()
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
